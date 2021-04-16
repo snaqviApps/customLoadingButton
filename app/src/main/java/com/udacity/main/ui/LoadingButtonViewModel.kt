@@ -15,7 +15,7 @@ class LoadingButtonViewModel (application: Application): AndroidViewModel(applic
     private val minute: Long = 60_000L
     private val second: Long = 1_000L
 
-    private val notifyPendingIntent: PendingIntent
+//    private val notifyPendingIntent: PendingIntent
 
     private val notifyIntent = Intent(application, DownloadReceiver::class.java)
 
@@ -25,13 +25,13 @@ class LoadingButtonViewModel (application: Application): AndroidViewModel(applic
             return _downloadIDObserver
         }
 
-    init {
-        notifyPendingIntent = PendingIntent.getBroadcast(
-            getApplication(),
-            REQUEST_CODE,
-            notifyIntent,
-            PendingIntent.FLAG_NO_CREATE
-        )
-    }
+//    init {
+//        notifyPendingIntent = PendingIntent.getBroadcast(
+//            getApplication(),
+//            REQUEST_CODE,
+//            notifyIntent,
+//            PendingIntent.FLAG_NO_CREATE
+//        )
+//    }
 
 }

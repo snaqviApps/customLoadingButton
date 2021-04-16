@@ -26,10 +26,12 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
-//    private var downloadID: Long = 0
+    private lateinit var downloadManager: DownloadManager
+
+    //    private var downloadID: Long = 0
     private var _downloadID = MutableLiveData<Long>()
     val downloadID: LiveData<Long>
-    get() = _downloadID
+        get() = _downloadID
 
     private lateinit var mainActivityViewModel: LoadingButtonViewModel
 
@@ -43,7 +45,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         val LoadViewModelFactory = LoadingButtonViewModelFactory(application)
-        mainActivityViewModel = ViewModelProvider(this, LoadViewModelFactory).get(LoadingButtonViewModel::class.java)
+        mainActivityViewModel =
+            ViewModelProvider(this, LoadViewModelFactory).get(LoadingButtonViewModel::class.java)
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         custom_button.setOnClickListener {
@@ -52,9 +55,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+        override fun onReceive(context: Context?, intent: Intent) {
+            val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            val query = DownloadManager.Query()
+            query.setFilterById(id)
+
+            val cursor = downloadManager.query(query)
+            if (cursor.moveToFirst()) {
+                val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                when (status) {
+                    DownloadManager.STATUS_SUCCESSFUL -> { }
+                    DownloadManager.STATUS_FAILED -> { }
+                }
+            }
+            /** Create Channel to send notification for file download-complete, status*/
+            createChannel(
+                getString(R.string.download_notification_channel_id),
+                getString(R.string.download_notification_channel_name)
+            )
         }
+
     }
 
     private fun download() {
@@ -66,16 +86,11 @@ class MainActivity : AppCompatActivity() {
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
 
-        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-        _downloadID =
-            downloadManager.enqueue(request)// enqueue puts the download request in the queue.
+        downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+//        downloadID = downloadManager.enqueue(request) // enqueue puts the download request in the queue.
+        _downloadID.value =
+            downloadManager.enqueue(request) // enqueue puts the download request in the queue.
 
-
-
-        /** Create Channel to send notification for file download-complete, status*/
-        createChannel(
-            getString(R.string.download_notification_channel_id),
-            getString(R.string.download_notification_channel_name))
     }
 
     companion object {
@@ -84,8 +99,8 @@ class MainActivity : AppCompatActivity() {
         private const val CHANNEL_ID = "channelId"
     }
 
-    private fun createChannel(channelId: String, channelName: String){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+    private fun createChannel(channelId: String, channelName: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
                 channelId,
                 channelName,
