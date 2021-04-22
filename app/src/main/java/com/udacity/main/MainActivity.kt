@@ -12,14 +12,16 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import com.udacity.R
 import com.udacity.main.ui.LoadingButtonViewModel
 import com.udacity.ui.LoadingButtonViewModelFactory
+import com.udacity.utils.sendNotification
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -33,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     val downloadID: LiveData<Long>
         get() = _downloadID
 
-    private lateinit var mainActivityViewModel: LoadingButtonViewModel
+//    private lateinit var mainActivityViewModel: LoadingButtonViewModel
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
@@ -45,13 +47,23 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         val LoadViewModelFactory = LoadingButtonViewModelFactory(application)
-        mainActivityViewModel =
-            ViewModelProvider(this, LoadViewModelFactory).get(LoadingButtonViewModel::class.java)
+//        mainActivityViewModel = ViewModelProvider(this, LoadViewModelFactory).get(LoadingButtonViewModel::class.java) // PendingIntent is getting null
+//        val mainActivityViewModel: LoadingButtonViewModel by viewModels()
+
+//        mainActivityViewModel = ViewModelProvider(this).get(LoadingButtonViewModel::class.java)
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         custom_button.setOnClickListener {
+            Toast.makeText(this, "custom button being clicked", Toast.LENGTH_SHORT).show()
             download()
         }
+
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        /** Create Channel to send notification for file download-complete, status*/
+        createChannel(
+            getString(R.string.download_notification_channel_id),
+            getString(R.string.download_notification_channel_name)
+        )
     }
 
     private val receiver = object : BroadcastReceiver() {
@@ -64,15 +76,18 @@ class MainActivity : AppCompatActivity() {
             if (cursor.moveToFirst()) {
                 val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
                 when (status) {
-                    DownloadManager.STATUS_SUCCESSFUL -> { }
-                    DownloadManager.STATUS_FAILED -> { }
+                    DownloadManager.STATUS_SUCCESSFUL -> {
+//                        if (context != null) {
+                            notificationManager.sendNotification(
+                                getText(R.string.download_complete).toString(),
+                                context
+                            )
+                    }
+                    DownloadManager.STATUS_FAILED -> {
+                    }
                 }
             }
-            /** Create Channel to send notification for file download-complete, status*/
-            createChannel(
-                getString(R.string.download_notification_channel_id),
-                getString(R.string.download_notification_channel_name)
-            )
+
         }
 
     }

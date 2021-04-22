@@ -16,4 +16,5 @@
     <string name="download_complete">Download Complete</string>
     <string name="download_notification_challel_id" translatable="false">download_channel</string>
     <string name="pause">Pause</string>
+    <string name="content_description">Custom Button</string>
 </resources>
