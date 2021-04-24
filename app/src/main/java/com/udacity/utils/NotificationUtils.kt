@@ -38,8 +38,7 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
     // Build the notification
     val builder = NotificationCompat.Builder(
         applicationContext!!,
-        applicationContext.getString(R.string.download_notification_challel_id)
-    )
+        applicationContext.getString(R.string.download_notification_channel_id))
         .setSmallIcon(R.drawable.ic_assistant_black_24dp)
         .setContentTitle(applicationContext.getString(R.string.notification_title))
         .setContentText(messageBody)
@@ -50,6 +49,7 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
         .setAutoCancel(true)
 
 
+//    notify(NOTIFICATION_ID, builder.build())
     notify(NOTIFICATION_ID, builder.build())
 }
 

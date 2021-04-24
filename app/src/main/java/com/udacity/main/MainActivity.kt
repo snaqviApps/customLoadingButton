@@ -21,11 +21,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.udacity.R
 import com.udacity.main.ui.LoadingButtonViewModel
+import com.udacity.receiver.DownloadReceiver
 import com.udacity.ui.LoadingButtonViewModelFactory
 import com.udacity.utils.sendNotification
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlin.math.log
 
 
 class MainActivity : AppCompatActivity() {
@@ -37,11 +37,13 @@ class MainActivity : AppCompatActivity() {
     val downloadID: LiveData<Long>
         get() = _downloadID
 
-//    private lateinit var mainActivityViewModel: LoadingButtonViewModel
-
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
+
+//    init {
+//        receiverD = DownloadReceiver()
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,12 +51,15 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         val LoadViewModelFactory = LoadingButtonViewModelFactory(application)
-//      mainActivityViewModel = ViewModelProvider(this, LoadViewModelFactory).get(LoadingButtonViewModel::class.java) // PendingIntent is getting null
+//        mainActivityViewModel = ViewModelProvider(this).get(LoadingButtonViewModel::class.java)
+//      mainActivityViewModel = ViewModelProvider(this, LoadViewModelFactory).get(LoadingButtonViewModel::class.java) // error: PendingIntent is getting null
+
         val mainActivityViewModel: LoadingButtonViewModel by viewModels()
 
-//        mainActivityViewModel = ViewModelProvider(this).get(LoadingButtonViewModel::class.java)
-
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+
+        val receiverD = DownloadReceiver()
+//        registerReceiver(receiverD, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         custom_button.setOnClickListener {
             Toast.makeText(this, "custom button being clicked", Toast.LENGTH_SHORT).show()
             download()
@@ -63,8 +68,8 @@ class MainActivity : AppCompatActivity() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         /** Create Channel to send notification for file download-complete, status*/
         createChannel(
-            getString(R.string.download_notification_channel_id),
-            getString(R.string.download_notification_channel_name)
+            this.getString(R.string.download_notification_channel_id),
+            this.getString(R.string.download_notification_channel_name)
         )
     }
 
@@ -79,17 +84,20 @@ class MainActivity : AppCompatActivity() {
                 val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
                 when (status) {
                     DownloadManager.STATUS_SUCCESSFUL -> {
-                            notificationManager.sendNotification(
-                                getText(R.string.download_complete).toString(),
-                                context
-                            )
-                        Toast.makeText(context, "DLoading complete, ", Toast.LENGTH_SHORT).show()
-                        Log.d("dl_success", "download was successful" )
-
+                        notificationManager.sendNotification(
+                            getText(R.string.download_complete).toString(),
+                            context
+                        )
+                        Toast.makeText(
+                            context,
+                            "DLoading complete in: $localClassName, downloadID: ${downloadID.value} ",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Log.d("dl_success", "download was successful")
                     }
                     DownloadManager.STATUS_FAILED -> {
 //                        Toast.makeText(context, "DLoading failed, ", Toast.LENGTH_SHORT).show()
-                        Log.e("dl_fail", "onReceive() failed" )
+                        Log.e("dl_fail", "onReceive() failed")
                         throw ExceptionInInitializerError("a download failure occured")
                     }
                 }
