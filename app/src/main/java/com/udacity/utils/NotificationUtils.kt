@@ -10,7 +10,7 @@ import com.udacity.R
 import com.udacity.main.MainActivity
 
 // Notification ID.
-private val NOTIFICATION_ID = 0
+private val NOTIFICATION_ID = 1004
 private val REQUEST_CODE = 0
 private val FLAGS = 0
 

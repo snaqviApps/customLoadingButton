@@ -12,6 +12,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +25,7 @@ import com.udacity.ui.LoadingButtonViewModelFactory
 import com.udacity.utils.sendNotification
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlin.math.log
 
 
 class MainActivity : AppCompatActivity() {
@@ -47,8 +49,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         val LoadViewModelFactory = LoadingButtonViewModelFactory(application)
-//        mainActivityViewModel = ViewModelProvider(this, LoadViewModelFactory).get(LoadingButtonViewModel::class.java) // PendingIntent is getting null
-//        val mainActivityViewModel: LoadingButtonViewModel by viewModels()
+//      mainActivityViewModel = ViewModelProvider(this, LoadViewModelFactory).get(LoadingButtonViewModel::class.java) // PendingIntent is getting null
+        val mainActivityViewModel: LoadingButtonViewModel by viewModels()
 
 //        mainActivityViewModel = ViewModelProvider(this).get(LoadingButtonViewModel::class.java)
 
@@ -77,13 +79,18 @@ class MainActivity : AppCompatActivity() {
                 val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
                 when (status) {
                     DownloadManager.STATUS_SUCCESSFUL -> {
-//                        if (context != null) {
                             notificationManager.sendNotification(
                                 getText(R.string.download_complete).toString(),
                                 context
                             )
+                        Toast.makeText(context, "DLoading complete, ", Toast.LENGTH_SHORT).show()
+                        Log.d("dl_success", "download was successful" )
+
                     }
                     DownloadManager.STATUS_FAILED -> {
+//                        Toast.makeText(context, "DLoading failed, ", Toast.LENGTH_SHORT).show()
+                        Log.e("dl_fail", "onReceive() failed" )
+                        throw ExceptionInInitializerError("a download failure occured")
                     }
                 }
             }
