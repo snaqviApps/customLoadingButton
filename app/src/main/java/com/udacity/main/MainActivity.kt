@@ -41,25 +41,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
 
-//    init {
-//        receiverD = DownloadReceiver()
-//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val LoadViewModelFactory = LoadingButtonViewModelFactory(application)
-//        mainActivityViewModel = ViewModelProvider(this).get(LoadingButtonViewModel::class.java)
+//        val LoadViewModelFactory = LoadingButtonViewModelFactory(application)
 //      mainActivityViewModel = ViewModelProvider(this, LoadViewModelFactory).get(LoadingButtonViewModel::class.java) // error: PendingIntent is getting null
-
         val mainActivityViewModel: LoadingButtonViewModel by viewModels()
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
-
-        val receiverD = DownloadReceiver()
-//        registerReceiver(receiverD, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         custom_button.setOnClickListener {
             Toast.makeText(this, "custom button being clicked", Toast.LENGTH_SHORT).show()
             download()
