@@ -46,9 +46,11 @@ class MainActivity : AppCompatActivity() {
 //      mainActivityViewModel = ViewModelProvider(this, LoadViewModelFactory).get(LoadingButtonViewModel::class.java) // error: PendingIntent is getting null
         val mainActivityViewModel: LoadingButtonViewModel by viewModels()
 
+        /**
+         * This approach for register works, as AndroidMenifest.xml file-based registeration did not
+         * */
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         custom_button.setOnClickListener {
-            Toast.makeText(this, "custom button being clicked", Toast.LENGTH_SHORT).show()
             download()
         }
 
@@ -70,9 +72,7 @@ class MainActivity : AppCompatActivity() {
                 .setAllowedOverRoaming(true)
 
         downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-        _downloadID.value =
-            downloadManager.enqueue(request) // enqueue puts the download request in the queue.
-
+        _downloadID.value = downloadManager.enqueue(request)
     }
 
     companion object {
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
             notificationChannel.enableLights(true)
             notificationChannel.lightColor = Color.LTGRAY
             notificationChannel.enableVibration(true)
-            notificationChannel.description = "Download complete"
+            notificationChannel.description = this.getString(R.string.download_complete)
             notificationManager.createNotificationChannel(notificationChannel)
         }
     }

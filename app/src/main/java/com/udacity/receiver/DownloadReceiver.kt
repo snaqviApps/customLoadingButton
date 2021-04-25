@@ -5,11 +5,8 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.udacity.R
 import com.udacity.utils.sendNotification
 
@@ -18,19 +15,17 @@ open class DownloadReceiver : BroadcastReceiver() {
     private lateinit var notificationManager: NotificationManager
     private lateinit var downloadManager: DownloadManager
 
-    private var _downloadID = MutableLiveData<Long>()
-    val downloadID: LiveData<Long>
-        get() = _downloadID
+    override fun onReceive(context: Context?, intent: Intent?) {
 
-    override fun onReceive(context: Context, intent: Intent) {
-
-        downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+        val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+        val downloadID = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0)
+
         val query = DownloadManager.Query()
-        query.setFilterById(id)
+        query.setFilterById(id!!)
 
         val cursor = downloadManager.query(query)
         if (cursor.moveToFirst()) {
@@ -38,19 +33,17 @@ open class DownloadReceiver : BroadcastReceiver() {
             when (status) {
                 DownloadManager.STATUS_SUCCESSFUL -> {
                     notificationManager.sendNotification(
-                        context?.getString(R.string.download_complete).toString(),
+                        context.getString(R.string.download_complete),
                         context
                     )
                     Toast.makeText(
                         context,
-                        "DLoading complete, downloadID: ${downloadID.value} ",
+                        "DLoading complete, downloadID: $downloadID ",
                         Toast.LENGTH_SHORT
                     ).show()
-                    Log.d("dl_success", "download was successful")
                 }
                 DownloadManager.STATUS_FAILED -> {
-                    Log.e("dl_fail", "onReceive() failed")
-                    throw ExceptionInInitializerError("a download failure occured")
+                    throw ExceptionInInitializerError("a download failure occurred")
                 }
             }
         }

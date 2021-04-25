@@ -13,7 +13,6 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="download_notification_channel_name">DOWNLOAD_CHANNEL</string>
     <string name="download_complete">Download Complete</string>
-    <string name="download_notification_challel_id" translatable="false">download_channel</string>
     <string name="pause">Pause</string>
     <string name="content_description">Custom Button</string>
     <string name="download_notification_channel_id">1004</string>
