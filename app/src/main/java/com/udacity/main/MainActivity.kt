@@ -1,16 +1,12 @@
 package com.udacity.main
 
-import android.app.DownloadManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.IntentFilter
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -87,7 +83,9 @@ class MainActivity : AppCompatActivity() {
                 channelId,
                 channelName,
                 NotificationManager.IMPORTANCE_LOW
-            )
+            ).apply {
+                setShowBadge(false)
+            }
             notificationChannel.enableLights(true)
             notificationChannel.lightColor = Color.LTGRAY
             notificationChannel.enableVibration(true)

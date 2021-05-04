@@ -2,9 +2,11 @@ package com.udacity
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Canvas
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import java.lang.Math.cos
+import java.lang.Math.sin
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -24,9 +26,30 @@ class LoadingButton @JvmOverloads constructor(
 
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+    }
+
+    private fun PointF.computeXYForSpeed(state: ButtonState, radius: Float) {
+        // Angles are in radians.
+        val startAngle = Math.PI * (9 / 8.0)
+        val angle = startAngle + ButtonState.Clicked * (Math.PI / 4)
+        x = (radius * cos(angle)).toFloat() + width / 2
+        y = (radius * sin(angle)).toFloat() + height / 2
+    }
+
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        textAlign = Paint.Align.CENTER
+        textSize = 55.0f
+        typeface = Typeface.create( "", Typeface.BOLD)
+    }
+
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+
+        paint.color = if (buttonState == ButtonState.Completed) Color.GRAY else Color.GREEN
 
     }
 
