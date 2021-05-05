@@ -30,14 +30,6 @@ class LoadingButton @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
     }
 
-    private fun PointF.computeXYForSpeed(state: ButtonState, radius: Float) {
-        // Angles are in radians.
-        val startAngle = Math.PI * (9 / 8.0)
-        val angle = startAngle + ButtonState.Clicked * (Math.PI / 4)
-        x = (radius * cos(angle)).toFloat() + width / 2
-        y = (radius * sin(angle)).toFloat() + height / 2
-    }
-
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         textAlign = Paint.Align.CENTER
@@ -48,6 +40,15 @@ class LoadingButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+
+        when (new) {
+            ButtonState.Loading -> {
+                // Do some action.
+            }
+            ButtonState.Completed -> {
+                // Do some action.
+            }
+        }
 
         paint.color = if (buttonState == ButtonState.Completed) Color.GRAY else Color.GREEN
 
