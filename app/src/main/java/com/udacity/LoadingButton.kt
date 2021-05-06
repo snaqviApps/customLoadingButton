@@ -19,8 +19,17 @@ class LoadingButton @JvmOverloads constructor(
 
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
 
-    }
+        when (new) {
+            ButtonState.Loading -> {
+                // Do some action.
+                valueAnimator.animatedValue
+            }
+            ButtonState.Completed -> {
+                valueAnimator.cancel()
+            }
+        }
 
+    }
 
     init {
 
@@ -40,15 +49,6 @@ class LoadingButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-
-        when (new) {
-            ButtonState.Loading -> {
-                // Do some action.
-            }
-            ButtonState.Completed -> {
-                // Do some action.
-            }
-        }
 
         paint.color = if (buttonState == ButtonState.Completed) Color.GRAY else Color.GREEN
 
