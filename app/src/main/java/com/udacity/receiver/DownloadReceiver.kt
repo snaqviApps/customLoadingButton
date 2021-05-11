@@ -36,11 +36,6 @@ open class DownloadReceiver : BroadcastReceiver() {
                         context.getString(R.string.download_complete),
                         context
                     )
-                    Toast.makeText(
-                        context,
-                        "DLoading complete, downloadID: $downloadID ",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
                 DownloadManager.STATUS_FAILED -> {
                     throw ExceptionInInitializerError("a download failure occurred")
@@ -49,7 +44,7 @@ open class DownloadReceiver : BroadcastReceiver() {
         }
 
         val notificationManager = ContextCompat.getSystemService(
-            context!!,
+            context,
             NotificationManager::class.java
         ) as NotificationManager
 

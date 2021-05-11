@@ -12,9 +12,10 @@ class LoadingButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private var radius: Float = 0.0f
+    // This would contain the loading background dimensions.
     private val loadingRect = Rect()
     private var progress: Int = 0
+
     private var oval = RectF(60.25f, 400f, 130f, 148f)
     private var widthSize = 0
     private var heightSize = 0
@@ -24,8 +25,6 @@ class LoadingButton @JvmOverloads constructor(
 
         when (new) {
             ButtonState.Loading -> {
-                // Do some action.
-//                valueAnimator.animatedValue ---> does not work
                 valueAnimator = ValueAnimator.ofInt(0, 360).setDuration(2000)
                     .apply {
                         addUpdateListener {
@@ -49,9 +48,7 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-//        super.onSizeChanged(w, h, oldw, oldh)
-        radius = (min(width, height) / 2.0 * 0.8).toFloat()
-
+        super.onSizeChanged(w, h, oldw, oldh)
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -67,11 +64,10 @@ class LoadingButton @JvmOverloads constructor(
 
         onSizeChanged(20,40, 10, 10)
         paint.color = if (buttonState == ButtonState.Completed) Color.GREEN else Color.CYAN
-
-        canvas?.drawText("Here is download button", 4.5f, 155.9f, paint)
-        loadingRect.set(0, 0, width * progress / 360, height)
-//        canvas?.drawRect(loadingRect, paint)
-        canvas?.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), radius, paint)
+//        loadingRect.set(120, 20, width * progress / 360, height)
+        loadingRect.offset(-220, 0)
+        loadingRect.set(320, 40, width * progress / 360,  height)
+        canvas?.drawRect(loadingRect, paint)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
