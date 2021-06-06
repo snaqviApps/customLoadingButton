@@ -25,7 +25,7 @@ class LoadingButton @JvmOverloads constructor(
 
         when (new) {
             ButtonState.Loading -> {
-                valueAnimator = ValueAnimator.ofInt(0, 360).setDuration(2000)
+                valueAnimator = ValueAnimator.ofInt(0, 360).setDuration(20)
                     .apply {
                         addUpdateListener {
                             progress = it.animatedValue as Int
@@ -35,16 +35,21 @@ class LoadingButton @JvmOverloads constructor(
                         repeatMode = ValueAnimator.RESTART
                         start()
                     }
-
             }
             ButtonState.Completed -> {
                 valueAnimator.cancel()
             }
-//            else -> {
-//                valueAnimator.currentPlayTime
-//            }
+            else -> {
+                valueAnimator.animatedValue
+                invalidate()
+            }
         }
 
+    }
+
+    init {
+        loadingRect.offset(-220, 0)
+        onSizeChanged(20,40, 10, 10)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -60,12 +65,9 @@ class LoadingButton @JvmOverloads constructor(
 
 
     override fun onDraw(canvas: Canvas?) {
-//        super.onDraw(canvas)
+        super.onDraw(canvas)
 
-        onSizeChanged(20,40, 10, 10)
         paint.color = if (buttonState == ButtonState.Completed) Color.GREEN else Color.CYAN
-//        loadingRect.set(120, 20, width * progress / 360, height)
-        loadingRect.offset(-220, 0)
         loadingRect.set(320, 40, width * progress / 360,  height)
         canvas?.drawRect(loadingRect, paint)
     }
